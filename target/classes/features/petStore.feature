@@ -11,8 +11,8 @@ Feature: petStore
     And the response is 200 for the order placed
     Then the body contain the "<petId>", "<quantity>" and "<status>"of the placed order
     Examples:
-      | petId | quantity |  status  |
-      | 1408  |     2    |  placed  |
+      | petId | quantity | status |
+      | 1408  |     2    | placed |
 
   @getPetOrderById
   Scenario: (3) Validate get request (find purchase order by ID)

@@ -5,7 +5,7 @@
     "name": "Cats"
   },
   "name": "Jack",
-  "photoUrls": [    "string"  ],
+  "photoUrls": [   "string"  ],
   "tags": [
     {
       "id": 1408,
