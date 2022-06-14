@@ -15,7 +15,7 @@ Feature: pet
     And the response is 200 for pet by status
 
   @postPet
-  Scenario Outline: (4) Validate post (add new pet)
+  Scenario Outline: (4) Validate post request (add new pet)
     Given post request that add a new pet
     And the response is 200 for create new pet
     Then the body contain the "<name>", the "<id>" and the "<status>" of the created pet
@@ -24,7 +24,7 @@ Feature: pet
       | Jack | 1408 | available |
 
   @putPet
-  Scenario Outline: (5) Validate put (update existing pet)
+  Scenario Outline: (5) Validate put request (update created pet)
     Given the following put request that update the created pet
     And the response is 200 for the put
     Then the body response contains update "<updated_name>"
@@ -33,7 +33,7 @@ Feature: pet
       | Jack Sparrow |
 
   @deletePet
-  Scenario Outline: (6) Validate delete pet
+  Scenario Outline: (6) Validate delete request (delete created pet)
     Given the following delete request that delete pet
     And the response is 200 for the delete
     Then the body response contains "<code>" and "<message>"

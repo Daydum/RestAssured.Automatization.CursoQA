@@ -8,16 +8,11 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
-
-import javax.naming.Name;
 import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
-
-import static io.restassured.RestAssured.*;
+import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class PetImplementation implements Serializable {
 
@@ -28,17 +23,16 @@ public class PetImplementation implements Serializable {
     private Response deletePet = null;
 
 
-
     @Before
     public void before() {
-        RestAssured.baseURI = "https://petstore.swagger.io/v2/pet/";
+        RestAssured.baseURI = "https://petstore.swagger.io/v2";
     }
 
     //Get Pet By Id. Validation
     @Given("obtain pet by {int}")
     public Response getPetById(int id) {
         postRequestThatAddANewPet();
-        petById = given().get(" " + id);
+        petById = given().get("/pet/"+ id);
         return petById;
     }
 
@@ -50,7 +44,7 @@ public class PetImplementation implements Serializable {
     //Get Pet By Status. Validation
     @Given("obtain pet by status")
     public Response getPetByStatus() {
-        petByStatus = given().get("/findByStatus?status=available&status=pending&status=sold");
+        petByStatus = given().get("/pet/findByStatus?status=available&status=pending&status=sold");
         return petByStatus;
     }
 
@@ -62,8 +56,8 @@ public class PetImplementation implements Serializable {
     //Create a new pet. Validation
     @Given("post request that add a new pet")
     public Response postRequestThatAddANewPet() {
-        File jsonFile = new File("src/test/java/data/Pet.json");
-        postPet = given().contentType(ContentType.JSON).body(jsonFile).post();
+        File jsonFile = new File("src/test/java/data/pet.json");
+        postPet = given().contentType(ContentType.JSON).body(jsonFile).post("/pet");
         return postPet;
     }
 
@@ -88,7 +82,7 @@ public class PetImplementation implements Serializable {
         postRequestThatAddANewPet();
         HashMap<String, String> bodyRequestMapPut = new HashMap<>();
         bodyRequestMapPut.put("name", "Jack Sparrow");
-        putPet = given().contentType(ContentType.JSON).body(bodyRequestMapPut).put();
+        putPet = given().contentType(ContentType.JSON).body(bodyRequestMapPut).put("/pet");
     }
 
     @And("the response is {int} for the put")
@@ -108,7 +102,7 @@ public class PetImplementation implements Serializable {
         postRequestThatAddANewPet();
         JsonPath jsonPathPet = new JsonPath(postPet.body().asString());
         String jsonIdCreate = jsonPathPet.getString("id");
-        deletePet = given().accept(ContentType.JSON).delete(jsonIdCreate);
+        deletePet = given().accept(ContentType.JSON).delete("/pet/" + jsonIdCreate);
     }
 
     @And("the response is {int} for the delete")

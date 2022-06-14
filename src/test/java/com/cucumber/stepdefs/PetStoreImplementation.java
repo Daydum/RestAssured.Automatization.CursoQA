@@ -1,18 +1,14 @@
 package com.cucumber.stepdefs;
 
-import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
-
 import java.io.File;
 import java.io.Serializable;
-
 import static io.restassured.RestAssured.*;
 import static org.junit.Assert.assertEquals;
 
@@ -22,14 +18,9 @@ public class PetStoreImplementation implements Serializable {
     private Response petOrderById = null;
     private Response deleteOrderById = null;
 
-    @Before
-    public void before() {
-        RestAssured.baseURI = "https://petstore.swagger.io/v2/store/";
-    }
-
     @Given("obtain pet inventory by status")
     public ValidatableResponse obtainPetInventoryByStatus() {
-        petInventoryByStatus = given().get("inventory");
+        petInventoryByStatus = given().get("/store/inventory");
         return petInventoryByStatus.then().log().body();
     }
 
@@ -41,7 +32,7 @@ public class PetStoreImplementation implements Serializable {
     @Given("post request that place an order for a pet")
     public Response postRequestThatPlaceAnOrderForAPet() {
         File jsonOrderFile = new File("src/test/java/data/petOrder.json");
-        postPetOrder = given().contentType(ContentType.JSON).body(jsonOrderFile).post("/order");
+        postPetOrder = given().contentType(ContentType.JSON).body(jsonOrderFile).post("/store/order");
         return postPetOrder;
     }
 
@@ -53,11 +44,9 @@ public class PetStoreImplementation implements Serializable {
     @Then("the body contain the {string}, {string} and {string}of the placed order")
     public void theBodyContainTheAndOfThePlacedOrder( String petId, String quantity, String status) {
         JsonPath jsonPathPetStore = new JsonPath(postPetOrder.body().asString());
-        //String jsonPetOrderId = jsonPathPetStore.getString("id");
         String jsonPetId = jsonPathPetStore.getString("petId");
         String jsonPetQuantity = jsonPathPetStore.getString("quantity");
         String jsonPetStatus = jsonPathPetStore.getString("status");
-        //assertEquals("The value of the ID field is not what is expected", id, jsonPetOrderId);
         assertEquals("The value of the PetId field is not what is expected", petId, jsonPetId);
         assertEquals("The value of the Quantity field is not what is expected", quantity, jsonPetQuantity);
         assertEquals("The value of the Status field is not what is expected", status, jsonPetStatus);
@@ -65,7 +54,7 @@ public class PetStoreImplementation implements Serializable {
 
     @Given("obtain pet order by {int}")
     public ValidatableResponse obtainPetOrderByID(int id) {
-        petOrderById = given().get("order/" + id);
+        petOrderById = given().get("store/order/" + id);
         return petOrderById.then().log().body();
     }
 
@@ -75,9 +64,9 @@ public class PetStoreImplementation implements Serializable {
     }
 
     @Given("the following delete request that delete pet order by id = {int}")
-    public ValidatableResponse theFollowingDeleteRequestThatDeletePetOrder(int id) {
-        deleteOrderById = given().get("order/" + id);
-        return deleteOrderById.then().log().body();
+    public Response theFollowingDeleteRequestThatDeletePetOrder(int id) {
+        deleteOrderById = given().delete("/store/order/" + id);
+        return deleteOrderById;
     }
 
     @And("the response is {int} for the delete pet order")
